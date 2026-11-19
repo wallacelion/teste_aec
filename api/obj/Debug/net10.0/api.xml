@@ -1,0 +1,314 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>api</name>
+    </assembly>
+    <members>
+        <member name="T:api.Migrations.CriarBancoInicial">
+            <inheritdoc />
+        </member>
+        <member name="M:api.Migrations.CriarBancoInicial.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:api.Migrations.CriarBancoInicial.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:api.Migrations.CriarBancoInicial.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:api.Migrations.InitialCreate">
+            <inheritdoc />
+        </member>
+        <member name="M:api.Migrations.InitialCreate.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:api.Migrations.InitialCreate.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:api.Migrations.InitialCreate.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:api.Migrations.SeedUserAdm">
+            <inheritdoc />
+        </member>
+        <member name="M:api.Migrations.SeedUserAdm.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:api.Migrations.SeedUserAdm.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:api.Migrations.SeedUserAdm.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:api.src.modules.address.AddressController">
+            <summary>
+            Gerenciamento de endereços
+            </summary>
+        </member>
+        <member name="M:api.src.modules.address.AddressController.GetAllAddresses(api.src.shared.application.dtos.AddressFilterRequestDto)">
+            <summary>
+            Obtém todos os endereços
+            </summary>
+            <returns>Lista de endereços</returns>
+            <response code="200">Sucesso - Retorna a lista de endereços</response>
+            <response code="401">Não autorizado - Token inválido ou ausente</response>
+        </member>
+        <member name="M:api.src.modules.address.AddressController.GetAddressById(System.Int32)">
+            <summary>
+            Obtém um endereço pelo ID
+            </summary>
+            <param name="id">ID do endereço</param>
+            <returns>Dados do endereço</returns>
+            <response code="200">Sucesso - Retorna os dados do endereço</response>
+            <response code="404">Não encontrado - Endereço não existe</response>
+            <response code="401">Não autorizado - Token inválido ou ausente</response>
+        </member>
+        <member name="M:api.src.modules.address.AddressController.GetAddressByCep(System.String)">
+            <summary>
+            Obtém um endereço pelo CEP
+            </summary>
+            <param name="cep">CEP do endereço</param>
+            <returns>Dados do endereço</returns>
+            <response code="200">Sucesso - Retorna os dados do endereço</response>
+            <response code="404">Não encontrado - Endereço não existe</response>
+            <response code="401">Não autorizado - Token inválido ou ausente</response>
+        </member>
+        <member name="M:api.src.modules.address.AddressController.CreateAddress(api.src.modules.address.application.dtos.CreateAddressDto)">
+            <summary>
+            Cria um novo endereço e salva o cache
+            </summary>
+            <param name="createAddressDto">Dados do novo endereço</param>
+            <returns>Endereço criado</returns>
+            <response code="201">Criado - Retorna o endereço criado</response>
+            <response code="400">Requisição inválida - Dados incorretos</response>
+            <response code="401">Não autorizado - Token inválido ou ausente</response>
+        </member>
+        <member name="M:api.src.modules.address.AddressController.UpdateAddress(System.Int32,api.src.modules.address.application.dtos.AddressDto)">
+            <summary>
+            Atualiza um endereço existente
+            </summary>
+            <param name="id">ID do endereço</param>
+            <param name="updateAddressDto">Dados atualizados do endereço</param>
+            <returns>Endereço atualizado</returns>
+            <response code="200">Sucesso - Retorna o endereço atualizado</response>
+            <response code="404">Não encontrado - Endereço não existe</response>
+            <response code="400">Requisição inválida - Dados incorretos</response>
+            <response code="401">Não autorizado - Token inválido ou ausente</response>
+        </member>
+        <member name="M:api.src.modules.address.AddressController.DeleteAddress(System.Int32)">
+            <summary>
+            Exclui um endereço
+            </summary>
+            <param name="id">ID do endereço</param>
+            <returns>Sem conteúdo</returns>
+            <response code="204">Sucesso - Endereço excluído</response>
+            <response code="404">Não encontrado - Endereço não existe</response>
+            <response code="401">Não autorizado - Token inválido ou ausente</response>
+        </member>
+        <member name="M:api.src.modules.address.AddressController.ConsultCep(System.String)">
+            <summary>
+            Consulta CEP na API ViaCEP
+            </summary>
+            <param name="cep">CEP a ser consultado (com ou sem formatação)</param>
+            <returns>Dados do endereço do ViaCEP</returns>
+            <response code="200">Sucesso - Retorna os dados do CEP consultado</response>
+            <response code="404">Não encontrado - CEP inválido ou não encontrado</response>
+            <response code="401">Não autorizado - Token inválido ou ausente</response>
+            <response code="408">Timeout - API ViaCEP não respondeu a tempo</response>
+        </member>
+        <member name="T:api.src.modules.address.infrastructure.cache.interfaces.IViaCepCacheService">
+            <summary>
+            Interface para cache de consultas ViaCEP
+            </summary>
+        </member>
+        <member name="M:api.src.modules.address.infrastructure.cache.interfaces.IViaCepCacheService.GetAsync(System.String)">
+            <summary>
+            Obtém dados do CEP do cache
+            </summary>
+            <param name="cep">CEP a ser consultado</param>
+            <returns>Dados do cache ou null se não existir</returns>
+        </member>
+        <member name="M:api.src.modules.address.infrastructure.cache.interfaces.IViaCepCacheService.SetAsync(System.String,api.src.modules.address.infrastructure.external.dtos.ViaCepResponseDto,System.Int32)">
+            <summary>
+            Armazena dados do CEP no cache
+            </summary>
+            <param name="cep">CEP a ser armazenado</param>
+            <param name="data">Dados do endereço</param>
+            <param name="expirationMinutes">Tempo de expiração em minutos (padrão: 1440 = 24h)</param>
+        </member>
+        <member name="M:api.src.modules.address.infrastructure.cache.interfaces.IViaCepCacheService.RemoveAsync(System.String)">
+            <summary>
+            Remove dados do CEP do cache
+            </summary>
+            <param name="cep">CEP a ser removido</param>
+        </member>
+        <member name="M:api.src.modules.address.infrastructure.cache.interfaces.IViaCepCacheService.ExistsAsync(System.String)">
+            <summary>
+            Verifica se o CEP existe no cache
+            </summary>
+            <param name="cep">CEP a ser verificado</param>
+            <returns>True se existir, False caso contrário</returns>
+        </member>
+        <member name="T:api.src.modules.address.infrastructure.cache.services.ViaCepCacheService">
+            <summary>
+            Implementação de cache Redis para consultas ViaCEP
+            </summary>
+        </member>
+        <member name="M:api.src.modules.address.infrastructure.cache.services.ViaCepCacheService.GetCacheKey(System.String)">
+            <summary>
+            Gera chave do cache para o CEP
+            </summary>
+        </member>
+        <member name="M:api.src.modules.address.infrastructure.cache.services.ViaCepCacheService.GetAsync(System.String)">
+            <summary>
+            Obtém dados do CEP do cache Redis
+            </summary>
+        </member>
+        <member name="M:api.src.modules.address.infrastructure.cache.services.ViaCepCacheService.SetAsync(System.String,api.src.modules.address.infrastructure.external.dtos.ViaCepResponseDto,System.Int32)">
+            <summary>
+            Armazena dados do CEP no cache Redis
+            </summary>
+        </member>
+        <member name="M:api.src.modules.address.infrastructure.cache.services.ViaCepCacheService.RemoveAsync(System.String)">
+            <summary>
+            Remove dados do CEP do cache Redis
+            </summary>
+        </member>
+        <member name="M:api.src.modules.address.infrastructure.cache.services.ViaCepCacheService.ExistsAsync(System.String)">
+            <summary>
+            Verifica se o CEP existe no cache Redis
+            </summary>
+        </member>
+        <member name="T:api.src.modules.address.infrastructure.external.dtos.ViaCepResponseDto">
+            <summary>
+            DTO de resposta da API ViaCEP
+            </summary>
+        </member>
+        <member name="P:api.src.modules.address.infrastructure.external.dtos.ViaCepResponseDto.Erro">
+            <summary>
+            Indica se houve erro na consulta
+            </summary>
+        </member>
+        <member name="T:api.src.modules.address.infrastructure.external.interfaces.IViaCepService">
+            <summary>
+            Interface para consumo da API ViaCEP
+            </summary>
+        </member>
+        <member name="M:api.src.modules.address.infrastructure.external.interfaces.IViaCepService.GetAddressByCepAsync(System.String)">
+            <summary>
+            Busca informações de endereço pelo CEP
+            </summary>
+            <param name="cep">CEP a ser consultado (com ou sem formatação)</param>
+            <returns>Dados do endereço ou null se não encontrado</returns>
+        </member>
+        <member name="M:api.src.modules.address.infrastructure.external.interfaces.IViaCepService.IsValidCep(System.String)">
+            <summary>
+            Valida se o CEP está no formato correto
+            </summary>
+            <param name="cep">CEP a ser validado</param>
+            <returns>True se válido, False caso contrário</returns>
+        </member>
+        <member name="T:api.src.modules.address.infrastructure.external.services.ViaCepService">
+            <summary>
+            Serviço de integração com a API ViaCEP
+            Implementa timeout, retry e fallback
+            </summary>
+        </member>
+        <member name="M:api.src.modules.address.infrastructure.external.services.ViaCepService.GetAddressByCepAsync(System.String)">
+            <summary>
+            Busca endereço pelo CEP com retry e fallback
+            </summary>
+        </member>
+        <member name="M:api.src.modules.address.infrastructure.external.services.ViaCepService.IsValidCep(System.String)">
+            <summary>
+            Valida formato do CEP
+            </summary>
+        </member>
+        <member name="M:api.src.modules.address.infrastructure.external.services.ViaCepService.CleanCep(System.String)">
+            <summary>
+            Remove formatação do CEP (hífens, pontos, espaços)
+            </summary>
+        </member>
+        <member name="M:api.src.modules.address.infrastructure.external.services.ViaCepService.CreateFallbackResponse(System.String)">
+            <summary>
+            Cria resposta de fallback quando a API ViaCEP não está disponível
+            Retorna um objeto com apenas o CEP preenchido
+            </summary>
+        </member>
+        <member name="T:api.src.modules.auth.AuthController">
+            <summary>
+            Autenticação e autorização
+            </summary>
+        </member>
+        <member name="M:api.src.modules.auth.AuthController.Login(api.src.modules.auth.application.dtos.AuthLoginDto)">
+            <summary>
+            Realiza login e retorna tokens de acesso
+            </summary>
+            <param name="loginRequest">Credenciais de login (email e senha)</param>
+            <returns>Tokens de acesso e refresh</returns>
+            <response code="200">Sucesso - Retorna os tokens JWT</response>
+            <response code="401">Não autorizado - Credenciais inválidas</response>
+            <response code="400">Requisição inválida - Dados incorretos</response>
+        </member>
+        <member name="T:api.src.modules.user.UserController">
+            <summary>
+            Gerenciamento de usuários
+            </summary>
+        </member>
+        <member name="M:api.src.modules.user.UserController.GetAllUsers(api.src.shared.application.dtos.UserFilterRequestDto)">
+            <summary>
+            Obtém todos os usuários
+            </summary>
+            <returns>Lista de usuários</returns>
+            <response code="200">Sucesso - Retorna a lista de usuários</response>
+            <response code="401">Não autorizado - Token inválido ou ausente</response>
+        </member>
+        <member name="M:api.src.modules.user.UserController.GetUserById(System.Guid)">
+            <summary>
+            Obtém um usuário pelo ID
+            </summary>
+            <param name="uid">ID único do usuário (GUID)</param>
+            <returns>Dados do usuário</returns>
+            <response code="200">Sucesso - Retorna os dados do usuário</response>
+            <response code="404">Não encontrado - Usuário não existe</response>
+            <response code="401">Não autorizado - Token inválido ou ausente</response>
+        </member>
+        <member name="M:api.src.modules.user.UserController.CreateUser(api.src.modules.user.application.dtos.UserDto)">
+            <summary>
+            Cria um novo usuário
+            </summary>
+            <param name="createUserDto">Dados do novo usuário</param>
+            <returns>Usuário criado</returns>
+            <response code="201">Criado - Retorna o usuário criado</response>
+            <response code="400">Requisição inválida - Dados incorretos</response>
+            <response code="401">Não autorizado - Token inválido ou ausente</response>
+        </member>
+        <member name="M:api.src.modules.user.UserController.UpdateUser(System.Guid,api.src.modules.user.application.dtos.UserDto)">
+            <summary>
+            Atualiza um usuário existente
+            </summary>
+            <param name="uid">ID único do usuário (GUID)</param>
+            <param name="updateUserDto">Dados atualizados do usuário</param>
+            <returns>Usuário atualizado</returns>
+            <response code="200">Sucesso - Retorna o usuário atualizado</response>
+            <response code="404">Não encontrado - Usuário não existe</response>
+            <response code="400">Requisição inválida - Dados incorretos</response>
+            <response code="401">Não autorizado - Token inválido ou ausente</response>
+        </member>
+        <member name="M:api.src.modules.user.UserController.DeleteUser(System.Guid)">
+            <summary>
+            Exclui um usuário
+            </summary>
+            <param name="uid">ID único do usuário (GUID)</param>
+            <returns>Sem conteúdo</returns>
+            <response code="204">Sucesso - Usuário excluído</response>
+            <response code="404">Não encontrado - Usuário não existe</response>
+            <response code="401">Não autorizado - Token inválido ou ausente</response>
+        </member>
+        <member name="T:Program">
+            <summary>
+            Auto-generated public partial Program class for top-level statement apps.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,27 @@
+#page-login {
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+
+    background-image: url(https://images.pexels.com/photos/1755/purple-abstract-blur-bokeh.jpg);
+    background-size: cover;
+    background-position: center;
+
+    .main-box {
+        background-color: #FFF;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        width: 96%;
+        max-width: 450px;
+        min-width: 300px;
+
+        label {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+    }
+
+}

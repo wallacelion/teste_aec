@@ -1,0 +1,24 @@
+#layout-mainframe-user {
+    display: grid;
+    grid-template-rows: 60px 1fr 30px;
+    height: auto;
+    min-height: 100dvh;
+    width: 100dvw;
+    gap: 0;
+
+    header {
+        box-sizing: border-box;
+        padding: 0.5rem;
+        display: grid;
+        grid-template-columns: 100px 1fr 100px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        align-items: center;
+
+        div:last-child {
+            text-align: right;
+            justify-content: end;
+        }
+    }
+
+}

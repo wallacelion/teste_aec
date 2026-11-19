@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  # SQL Server Database
+  database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: avaliacaoaec-sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=(9Xupi6I3fQ!77zAA/wgA/~rymn-HNMl
+      - MSSQL_PID=Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    networks:
+      - avaliacaoaec-network
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '(9Xupi6I3fQ!77zAA/wgA/~rymn-HNMl' -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: avaliacaoaec-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - avaliacaoaec-network
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  # Redis Commander (opcional - interface web para visualizar cache)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: avaliacaoaec-redis-ui
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081:8081"
+    networks:
+      - avaliacaoaec-network
+    depends_on:
+      - redis
+
+volumes:
+  sqlserver-data:
+    driver: local
+  redis-data:
+    driver: local
+
+networks:
+  avaliacaoaec-network:
+    driver: bridge

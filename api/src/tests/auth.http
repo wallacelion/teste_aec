@@ -1,0 +1,28 @@
+@api_url = http://localhost:5000
+
+### Login
+POST {{api_url}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin@example.com",
+  "password": "Admin@123"
+}
+
+### Login - User comum
+POST {{api_url}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "user@example.com",
+  "password": "User@123"
+}
+
+### Login - User comum correto
+POST {{api_url}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "joao.silva@example.com",
+  "password": "Senha@123"
+}

@@ -1,0 +1,164 @@
+### Testes de integração ViaCEP no módulo Address
+### Certifique-se de executar o login primeiro para obter o token
+
+@baseUrl = http://localhost:5000
+@token = seu_token_jwt_aqui
+
+### 1. Login (obter token)
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin@example.com",
+  "password": "admin123"
+}
+
+### 2. Consultar CEP válido via ViaCEP (São Paulo - Av Paulista)
+GET {{baseUrl}}/api/address/viacep/01310-100
+Authorization: Bearer {{token}}
+
+### 3. Consultar CEP válido sem formatação
+GET {{baseUrl}}/api/address/viacep/01310100
+Authorization: Bearer {{token}}
+
+### 4. Consultar CEP inválido
+GET {{baseUrl}}/api/address/viacep/00000000
+Authorization: Bearer {{token}}
+
+### 5. Consultar CEP com formato incorreto
+GET {{baseUrl}}/api/address/viacep/123
+Authorization: Bearer {{token}}
+
+### 6. Criar endereço com CEP válido (ViaCEP preenche automaticamente)
+POST {{baseUrl}}/api/address
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "cep": "01310-100",
+  "number": "1000",
+  "complemento": "Sala 101"
+}
+
+### 7. Criar endereço com CEP válido + dados manuais (dados manuais têm prioridade)
+POST {{baseUrl}}/api/address
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "cep": "01310-100",
+  "logradouro": "Meu Logradouro Customizado",
+  "number": "2000",
+  "complemento": "Apto 202",
+  "bairro": "Meu Bairro",
+  "localidade": "São Paulo",
+  "uf": "SP"
+}
+
+### 8. Criar endereço com CEP inválido (fallback: usa dados fornecidos)
+POST {{baseUrl}}/api/address
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "cep": "99999-999",
+  "logradouro": "Rua Manual",
+  "number": "123",
+  "complemento": "",
+  "bairro": "Bairro Manual",
+  "localidade": "Cidade Manual",
+  "uf": "XX"
+}
+
+### 9. Atualizar endereço (consulta ViaCEP novamente)
+PUT {{baseUrl}}/api/address/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "id": 1,
+  "userId": 1,
+  "cep": "01310-200",
+  "number": "1500",
+  "complemento": "Sala 301"
+}
+
+### 10. Listar todos os endereços
+GET {{baseUrl}}/api/address
+Authorization: Bearer {{token}}
+
+### 11. Buscar endereço específico
+GET {{baseUrl}}/api/address/1
+Authorization: Bearer {{token}}
+
+### 12. Excluir endereço
+DELETE {{baseUrl}}/api/address/1
+Authorization: Bearer {{token}}
+
+###############################################
+### Testes de Resiliência (Timeout/Retry)
+###############################################
+
+### 13. CEP - Rio de Janeiro
+GET {{baseUrl}}/api/address/viacep/20040-020
+Authorization: Bearer {{token}}
+
+### 14. CEP - Belo Horizonte
+GET {{baseUrl}}/api/address/viacep/30130-000
+Authorization: Bearer {{token}}
+
+### 15. CEP - Brasília
+GET {{baseUrl}}/api/address/viacep/70040-020
+Authorization: Bearer {{token}}
+
+###############################################
+### Testes de Carga (executar múltiplas vezes)
+###############################################
+
+### 16. Múltiplas consultas CEP (testar retry)
+GET {{baseUrl}}/api/address/viacep/01310-100
+Authorization: Bearer {{token}}
+
+###
+GET {{baseUrl}}/api/address/viacep/20040-020
+Authorization: Bearer {{token}}
+
+###
+GET {{baseUrl}}/api/address/viacep/30130-000
+Authorization: Bearer {{token}}
+
+###############################################
+### Explicações dos Comportamentos
+###############################################
+
+# 1. CREATE com CEP válido:
+#    - API consulta ViaCEP
+#    - Preenche automaticamente: logradouro, bairro, localidade, uf
+#    - Usuário precisa fornecer apenas: userId, cep, number, complemento (opcional)
+
+# 2. CREATE com dados manuais:
+#    - Se o usuário fornecer logradouro, bairro, etc., esses valores TÊM PRIORIDADE
+#    - ViaCEP é usado apenas como fallback para campos vazios
+
+# 3. CREATE com ViaCEP offline/timeout:
+#    - Sistema usa FALLBACK
+#    - Aceita os dados fornecidos pelo usuário
+#    - Log: "ViaCEP indisponível para CEP X. Usando dados fornecidos pelo usuário."
+
+# 4. UPDATE:
+#    - Mesma lógica do CREATE
+#    - Consulta ViaCEP novamente para o novo CEP
+#    - Dados manuais têm prioridade
+
+# 5. Políticas de Resiliência:
+#    - TIMEOUT: 5 segundos por tentativa
+#    - RETRY: 3 tentativas com exponential backoff (2^n segundos)
+#    - FALLBACK: Retorna null, permitindo uso de dados manuais
+
+# 6. Endpoint /viacep/{cep}:
+#    - Permite consulta direta à API ViaCEP
+#    - Útil para validar CEP antes de criar endereço
+#    - Retorna JSON do ViaCEP ou erro 404

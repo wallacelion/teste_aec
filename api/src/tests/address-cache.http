@@ -1,0 +1,248 @@
+### Testes de Cache Redis - ViaCEP
+### Este arquivo testa a funcionalidade de cache para consultas de CEP
+
+@baseUrl = http://localhost:5000
+@token = seu_token_jwt_aqui
+
+### 1. Login (obter token)
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin@example.com",
+  "password": "admin123"
+}
+
+###############################################################################
+### TESTES DE CACHE HIT/MISS
+###############################################################################
+
+### 2. Primeira consulta - Cache MISS (deve consultar ViaCEP)
+# Observe nos logs: "Cache MISS para CEP 01310100"
+POST {{baseUrl}}/api/address
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "cep": "01310-100",
+  "number": "1000",
+  "complemento": "Teste Cache Miss"
+}
+
+### 3. Segunda consulta MESMO CEP - Cache HIT (deve recuperar do Redis)
+# Observe nos logs: "Cache HIT para CEP 01310100"
+# Esta chamada deve ser mais rápida que a anterior
+POST {{baseUrl}}/api/address
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "cep": "01310-100",
+  "number": "2000",
+  "complemento": "Teste Cache Hit"
+}
+
+### 4. Terceira consulta MESMO CEP com formatação diferente - Cache HIT
+# O CEP é normalizado, então "01310100" e "01310-100" são o mesmo no cache
+POST {{baseUrl}}/api/address
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "cep": "01310100",
+  "number": "3000",
+  "complemento": "Teste Normalização"
+}
+
+###############################################################################
+### TESTES DE ATUALIZAÇÃO COM CACHE
+###############################################################################
+
+### 5. Atualizar endereço com CEP já em cache - Cache HIT
+# Substitua {addressId} pelo ID retornado na criação
+PUT {{baseUrl}}/api/address/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "id": 1,
+  "userId": 1,
+  "cep": "01310-100",
+  "number": "1500",
+  "complemento": "Atualizado via Cache"
+}
+
+### 6. Atualizar para CEP diferente - Cache MISS (se nunca foi consultado)
+PUT {{baseUrl}}/api/address/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "id": 1,
+  "userId": 1,
+  "cep": "20040-020",
+  "number": "100",
+  "complemento": "Rio de Janeiro - Centro"
+}
+
+### 7. Criar endereço com o NOVO CEP - Cache HIT (foi cacheado no passo anterior)
+POST {{baseUrl}}/api/address
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "cep": "20040-020",
+  "number": "200",
+  "complemento": "Outro endereço no Rio"
+}
+
+###############################################################################
+### TESTES DE MÚLTIPLOS CEPs
+###############################################################################
+
+### 8. CEP São Paulo - Jardins (Cache MISS na primeira vez)
+POST {{baseUrl}}/api/address
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "cep": "01452-000",
+  "number": "100"
+}
+
+### 9. CEP Belo Horizonte - Centro (Cache MISS na primeira vez)
+POST {{baseUrl}}/api/address
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "cep": "30130-100",
+  "number": "50"
+}
+
+### 10. CEP Brasília - Asa Sul (Cache MISS na primeira vez)
+POST {{baseUrl}}/api/address
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "cep": "70040-020",
+  "number": "200"
+}
+
+### 11. Repetir CEP São Paulo - Cache HIT
+POST {{baseUrl}}/api/address
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "cep": "01452-000",
+  "number": "150"
+}
+
+### 12. Repetir CEP Belo Horizonte - Cache HIT
+POST {{baseUrl}}/api/address
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "cep": "30130-100",
+  "number": "75"
+}
+
+###############################################################################
+### TESTES DE FALLBACK E RESILIÊNCIA
+###############################################################################
+
+### 13. CEP inválido - NÃO deve ser cacheado
+# Mesmo consultando novamente, sempre será um MISS (CEPs inválidos não são armazenados)
+POST {{baseUrl}}/api/address
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "cep": "00000-000",
+  "number": "0",
+  "logradouro": "Rua Manual",
+  "bairro": "Bairro Manual",
+  "localidade": "Cidade Manual",
+  "uf": "SP"
+}
+
+### 14. Repetir CEP inválido - Ainda será MISS (não foi cacheado)
+POST {{baseUrl}}/api/address
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "cep": "00000-000",
+  "number": "1",
+  "logradouro": "Outra Rua Manual",
+  "bairro": "Outro Bairro",
+  "localidade": "Outra Cidade",
+  "uf": "RJ"
+}
+
+###############################################################################
+### TESTES DE PERFORMANCE
+###############################################################################
+
+### 15. Consulta direta ViaCEP (para comparar tempo de resposta)
+GET {{baseUrl}}/api/address/viacep/01310-100
+Authorization: Bearer {{token}}
+
+### 16. Criação com cache (para comparar tempo de resposta)
+# Compare o tempo de resposta deste com o passo 2 (primeira consulta)
+# Este deve ser significativamente mais rápido
+POST {{baseUrl}}/api/address
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "cep": "01310-100",
+  "number": "9999"
+}
+
+###############################################################################
+### OBSERVAÇÕES PARA TESTES
+###############################################################################
+
+# Como interpretar os logs:
+#
+# Cache MISS:
+# - "Cache MISS para CEP 01310100"
+# - "Consultando ViaCEP"
+# - "CEP 01310100 armazenado no cache com expiração de 1440 minutos"
+#
+# Cache HIT:
+# - "Cache HIT para CEP 01310100"
+# - NÃO há log "Consultando ViaCEP"
+#
+# Performance esperada:
+# - Cache MISS: ~200-500ms (depende da latência do ViaCEP)
+# - Cache HIT: ~10-50ms (apenas consulta ao Redis local)
+#
+# Para limpar o cache e testar novamente:
+# Execute no terminal: redis-cli FLUSHDB
+# Ou no Redis CLI: FLUSHDB
+#
+# Para verificar chaves no cache:
+# redis-cli KEYS "viacep:*"
+#
+# Para ver dados de um CEP específico:
+# redis-cli GET "viacep:01310100"
+#
+# Para ver TTL de uma chave:
+# redis-cli TTL "viacep:01310100"

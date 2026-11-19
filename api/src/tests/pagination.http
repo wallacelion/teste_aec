@@ -1,0 +1,32 @@
+### Teste Paginação Usuários
+@baseUrl = http://localhost:5000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiI0ODE2YjEzMy1kMjc3LTRhODEtOTBhNC0wOWI0YzVhOGRjODciLCJyb2xlIjoiM
+
+### 1. Listar primeira página (tamanho 5)
+GET {{baseUrl}}/api/user?pageNumber=1&pageSize=5
+Authorization: Bearer {{token}}
+
+### 2. Listar segunda página (tamanho 5)
+GET {{baseUrl}}/api/user?pageNumber=2&pageSize=5
+Authorization: Bearer {{token}}
+
+### 3. Filtrar por nome
+GET {{baseUrl}}/api/user?name=joao&pageNumber=1&pageSize=10
+Authorization: Bearer {{token}}
+
+### 4. Ordenar por email DESC
+GET {{baseUrl}}/api/user?orderBy=email&orderDirection=DESC&pageNumber=1&pageSize=10
+Authorization: Bearer {{token}}
+
+### Teste Paginação Endereços
+
+### 5. Listar primeira página endereços (tamanho 5)
+GET {{baseUrl}}/api/address?pageNumber=1&pageSize=5
+Authorization: Bearer {{token}}
+
+### 6. Filtrar por localidade
+GET {{baseUrl}}/api/address?localidade=S%C3%A3o%20Paulo&pageNumber=1&pageSize=10
+Authorization: Bearer {{token}}
+
+### Observação
+# Verifique o header X-Pagination na resposta para CurrentPage, PageSize e TotalItems.

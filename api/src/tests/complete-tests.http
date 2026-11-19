@@ -1,0 +1,134 @@
+@api_url = http://localhost:5000
+@token = 123
+
+### 1. Login para obter o token
+# @name login
+POST {{api_url}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin@example.com",
+  "password": "Admin@123"
+}
+
+###
+
+@token = {{login.response.body.$.accessToken}}
+
+### ============================
+### USER CRUD OPERATIONS
+### ============================
+
+### 2. Get all users (necessita autenticação)
+GET {{api_url}}/api/user
+Accept: application/json
+Authorization: Bearer {{token}}
+
+### 3. Create new user
+# @name createUser
+POST {{api_url}}/api/user
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Admin",
+  "email": "admin@example.com",
+  "password": "Admin@123",
+  "role": 1
+}
+
+###
+
+@userUid = {{createUser.response.body.$.uid}}
+
+### 4. Get user by UID
+GET {{api_url}}/api/user/{{userUid}}
+Accept: application/json
+Authorization: Bearer {{token}}
+
+### 5. Update user
+PUT {{api_url}}/api/user/{{userUid}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "uid": "{{userUid}}",
+  "name": "Teste Usuario Atualizado",
+  "email": "teste@example.com",
+  "role": 1
+}
+
+### 6. Delete user
+DELETE {{api_url}}/api/user/{{userUid}}
+Authorization: Bearer {{token}}
+
+
+### ============================
+### ADDRESS CRUD OPERATIONS
+### ============================
+
+### 7. Get all addresses
+GET {{api_url}}/api/address
+Accept: application/json
+Authorization: Bearer {{token}}
+
+### 8. Create new address
+# @name createAddress
+POST {{api_url}}/api/address
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "userId": 1,
+  "cep": "01310-100",
+  "logradouro": "Avenida Paulista",
+  "number": "1578",
+  "complemento": "Andar 15",
+  "bairro": "Bela Vista",
+  "localidade": "São Paulo",
+  "uf": "SP"
+}
+
+###
+
+@addressId = {{createAddress.response.body.$.id}}
+
+### 9. Get address by ID
+GET {{api_url}}/api/address/{{addressId}}
+Accept: application/json
+Authorization: Bearer {{token}}
+
+### 10. Update address
+PUT {{api_url}}/api/address/{{addressId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "id": {{addressId}},
+  "userId": 1,
+  "cep": "01310-100",
+  "logradouro": "Avenida Paulista",
+  "number": "1578",
+  "complemento": "Andar 20",
+  "bairro": "Bela Vista",
+  "localidade": "São Paulo",
+  "uf": "SP"
+}
+
+### 11. Delete address
+DELETE {{api_url}}/api/address/{{addressId}}
+Authorization: Bearer {{token}}
+
+
+### ============================
+### TESTES SEM AUTENTICAÇÃO
+### (Devem retornar 401 Unauthorized)
+### ============================
+
+### 12. Tentar acessar users sem token (deve falhar)
+GET {{api_url}}/api/user
+Accept: application/json
+
+### 13. Tentar acessar addresses sem token (deve falhar)
+GET {{api_url}}/api/address
+Accept: application/json

@@ -1,0 +1,49 @@
+@api_url = http://localhost:5000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiI0ODE2YjEzMy1kMjc3LTRhODEtOTBhNC0wOWI0YzVhOGRjODciLCJyb2xlIjoiMSIsIm5iZiI6MTc5NDUxMTQ2NCwiZXhwIjoxNzk0NTE1MDY0LCJpYXQiOjE3OTQ1MTE0NjR9.zxtakC-J9jjxe-teAuEoMbRUFgMnLdW6UhZ2AX953fs
+
+### Login (para obter o token)
+POST {{api_url}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "joao.silva@example.com",
+  "password": "Senha@123"
+}
+
+### Get all users
+GET {{api_url}}/api/user?pageNumber=2&pageSize=2
+Accept: application/json
+Authorization: Bearer {{token}}
+
+### Get user by UID (substitua pelo UID real)
+GET {{api_url}}/api/user/4816b133-d277-4a81-90a4-09b4c5a8dc87
+Accept: application/json
+Authorization: Bearer {{token}}
+
+### Create new user
+POST {{api_url}}/api/user
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Tatiane",
+  "email": "tatiane@example.com",
+  "password": "Senha@123",
+  "role": 1
+}
+
+### Update user (substitua pelo UID real)
+PUT {{api_url}}/api/user/4816b133-d277-4a81-90a4-09b4c5a8dc87
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "João Silva Atualizado",
+  "email": "joao.silva@example.com",
+  "role": 1
+}
+
+### Delete user (substitua pelo UID real)
+DELETE {{api_url}}/api/user/4816b133-d277-4a81-90a4-09b4c5a8dc87
+Authorization: Bearer {{token}}
+

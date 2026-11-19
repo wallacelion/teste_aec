@@ -1,0 +1,60 @@
+@api_url = http://localhost:5000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiI0ODE2YjEzMy1kMjc3LTRhODEtOTBhNC0wOWI0YzVhOGRjODciLCJyb2xlIjoiMSIsIm5iZiI6MTc5NDYwNTA3OSwiZXhwIjoxNzk0NjA4Njc5LCJpYXQiOjE3OTQ2MDUwNzl9.0_e54UX4tOlAsI7IgyYTvLiG19XCKx8szNivV0WIGNM
+@userId = 0BC7C8BB-C201-40FE-97DD-66F7944185C2
+
+### Login (para obter o token)
+POST {{api_url}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "joao.silva@example.com",
+  "password": "Senha@123"
+}
+
+### Get all addresses
+GET {{api_url}}/api/address
+Accept: application/json
+Authorization: Bearer {{token}}
+
+### Get address by ID (substitua pelo ID real)
+GET {{api_url}}/api/address/1
+Accept: application/json
+Authorization: Bearer {{token}}
+
+### Create new address
+POST {{api_url}}/api/address
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "userUId": "0BC7C8BB-C201-40FE-97DD-66F7944185C2",
+  "cep": "32041700",
+  "logradouro": "Rua Visconde de Saboia",
+  "number": "32",
+  "complemento": "apt 204",
+  "bairro": "Linda Vista",
+  "localidade": "Contagem",
+  "uf": "MG"
+}
+
+### Update address (substitua pelo ID real)
+PUT {{api_url}}/api/address/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "id": 1,
+  "userId": {{userId}},
+  "cep": "01001-000",
+  "logradouro": "Praça da Sé",
+  "number": "456",
+  "complemento": "lado par",
+  "bairro": "Sé",
+  "localidade": "São Paulo",
+  "uf": "SP"
+}
+
+### Delete address (substitua pelo ID real)
+DELETE {{api_url}}/api/address/1
+Authorization: Bearer {{token}}
+

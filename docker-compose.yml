@@ -1,0 +1,51 @@
+services:
+  database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sql_server_container
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=(9Xupi6I3fQ!77zAA/wgA/~rymn-HNMl
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+
+  redis:
+    image: redis:7-alpine
+    container_name: avaliacaoaec-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - avaliacaoaec-network
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    depends_on:
+      - database
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: dotnet_api_container
+    ports:
+      - "5000:8080"
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=database;Database=avaliacaoaec;User Id=sa;Password=(9Xupi6I3fQ!77zAA/wgA/~rymn-HNMl;Encrypt=False;
+      - Jwt__Secret=hK9!mX2$vP5&qZ8*wB1_nL4#jF7@tR3%dE6(yG0
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - redis
+
+volumes:
+  sql_data:
+  redis-data:
+    driver: local
+networks:
+  avaliacaoaec-network:
+    driver: bridge
